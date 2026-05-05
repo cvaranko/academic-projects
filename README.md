@@ -23,7 +23,7 @@ A simple linear regression analysis examining the relationship between food tast
 ### 📝 IT ethics: the societal impact of generative AI
 > Research Essay
 
-An examination of the societal, environmental, and ethical implications of generative AI — covering workforce displacement, copyright infringement, corporate accountability, and the evolving regulatory landscape shaping AI's future.
+An examination of the societal, environmental, and ethical implications of generative AI, covering workforce displacement, copyright infringement, corporate accountability, and the evolving regulatory landscape shaping AI's future.
 
 ---
 
