@@ -1,4 +1,4 @@
-# academic projects
+# 📓 academic projects
 
 A collection of coursework and projects completed during my undergraduate studies in data analytics. Organized by year, these projects span data engineering, statistical modeling, sentiment analysis, econometrics, and applied research.
 
