@@ -65,6 +65,7 @@ An OLS regression analysis examining the determinants of the 30-year fixed mortg
 ---
 
 ### 📐 econometrics final project
+**[view the live presentation →](https://cvaranko.github.io/academic-projects/econometrics-final-project/)**
 > R · OLS Regression · Econometrics
 
 A cross-sectional OLS regression analysis examining the effect of fast food consumption on adult obesity rates across 50 U.S. states using 2021 data. Includes correlation analysis, Breusch-Pagan heteroskedasticity testing, HC1 robust standard errors, VIF diagnostics, and an interaction term between fast food density and median household income.

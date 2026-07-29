@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Effect of Fast Food Consumption on Obesity Rates Across United States</title>
+<meta name="description" content="A cross-sectional OLS regression on 50 U.S. states examining what drives differences in adult obesity rates, and whether fast food density holds up once income, inactivity, diabetes, and urbanicity are controlled for.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cvaranko.github.io/academic-projects/econometrics-final-project/">
+<meta property="og:title" content="The Effect of Fast Food Consumption on Obesity Rates Across United States">
+<meta property="og:description" content="A cross-sectional OLS regression on 50 U.S. states examining what drives differences in adult obesity rates.">
+<meta property="og:image" content="https://cvaranko.github.io/academic-projects/econometrics-final-project/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Effect of Fast Food Consumption on Obesity Rates Across United States">
+<meta name="twitter:description" content="A cross-sectional OLS regression on 50 U.S. states examining what drives differences in adult obesity rates.">
+<meta name="twitter:image" content="https://cvaranko.github.io/academic-projects/econometrics-final-project/og-image.png">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iI0MxNDQwRSIvPjxyZWN0IHg9IjciIHk9IjE3IiB3aWR0aD0iNCIgaGVpZ2h0PSI5IiBmaWxsPSIjRkFGNkVFIi8+PHJlY3QgeD0iMTQiIHk9IjEyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxNCIgZmlsbD0iI0ZBRjZFRSIvPjxyZWN0IHg9IjIxIiB5PSI2IiB3aWR0aD0iNCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzFCNkU2MyIvPjwvc3ZnPgo=">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF6EE;
+    --bg-alt: #F1E9D8;
+    --card: #FFFFFF;
+    --border: #E3D8C3;
+    --text: #221B14;
+    --text-dim: #5C5042;
+    --text-faint: #7A6E5C;
+    --accent: #C1440E;
+    --accent-2: #C98A1F;
+    --teal: #1B6E63;
+    --sig: #1B6E63;
+    --pos: #1B6E63;
+    --neg: #C1440E;
+    --max-width: 960px;
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 2px rgba(34, 27, 20, 0.06), 0 6px 18px rgba(34, 27, 20, 0.05);
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', "Cascadia Code", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  section {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 100px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  section:last-of-type { border-bottom: none; }
+
+  h1, h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+
+  h2 { font-size: 2rem; }
+
+  h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.05rem;
+  }
+
+  /* ---------- Section header (kicker + big numeral) ---------- */
+  .section-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 8px;
+  }
+
+  .section-num {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    font-weight: 600;
+    line-height: 0.85;
+    color: rgba(193, 68, 14, 0.14);
+    -webkit-text-stroke: 1px rgba(193, 68, 14, 0.4);
+    flex-shrink: 0;
+    user-select: none;
+    padding-top: 2px;
+  }
+
+  .section-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .section-intro {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 680px;
+    margin-top: 16px;
+    margin-bottom: 40px;
+  }
+
+  p { color: var(--text-dim); }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(250, 246, 238, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 3px solid var(--accent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 13px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-link {
+    color: var(--text-faint);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .nav-link:hover { color: var(--text); }
+
+  .nav-link.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  body { padding-top: 55px; }
+
+  /* ---------- Hero ---------- */
+  #hero {
+    max-width: none;
+    min-height: calc(100vh - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 60% 50% at 88% 12%, rgba(193, 68, 14, 0.08), transparent 60%),
+      radial-gradient(ellipse 55% 45% at 8% 92%, rgba(27, 110, 99, 0.07), transparent 55%),
+      var(--bg);
+  }
+
+  #hero .hero-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  #hero h1 {
+    font-size: clamp(2.3rem, 5.2vw, 3.6rem);
+    line-height: 1.12;
+    max-width: 780px;
+  }
+
+  .hero-subtitle {
+    color: var(--text-dim);
+    font-size: 1.15rem;
+    max-width: 640px;
+    margin-top: 24px;
+  }
+
+  .hero-byline {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-faint);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 300px;
+  }
+
+  /* ---------- Shared components ---------- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  thead tr {
+    border-top: 2px solid var(--text);
+    border-bottom: 1px solid var(--text);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+  }
+
+  td { border-bottom: 1px solid var(--border); }
+
+  tbody tr:last-child td { border-bottom: 2px solid var(--text); }
+
+  th {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  tr.row-significant td { color: var(--sig); }
+
+  tr.row-significant td:first-child { font-weight: 600; }
+
+  .table-scroll { overflow-x: auto; }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-alt);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-top: 24px;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  .callout.win {
+    border-left-color: var(--sig);
+  }
+
+  /* ---------- Expandable explainers ---------- */
+  .info-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .info-toggle:hover {
+    background: rgba(193, 68, 14, 0.06);
+    border-color: var(--accent);
+  }
+
+  .info-toggle .arrow {
+    display: inline-block;
+    transition: transform 0.15s;
+  }
+
+  .info-toggle[aria-expanded="true"] .arrow {
+    transform: rotate(180deg);
+  }
+
+  .info-panel {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 18px 20px;
+    margin-top: 12px;
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+
+  .info-panel p + p { margin-top: 10px; }
+
+  .info-panel[hidden] { display: none; }
+
+  .why-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0;
+    cursor: pointer;
+    margin-top: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .why-toggle:hover { color: var(--accent); }
+
+  .why-toggle .arrow {
+    display: inline-block;
+    transition: transform 0.15s;
+    text-decoration: none;
+  }
+
+  .why-toggle[aria-expanded="true"] .arrow {
+    transform: rotate(180deg);
+  }
+
+  .why-panel {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 10px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+
+  .why-panel[hidden] { display: none; }
+
+  .p-col-highlight {
+    text-decoration: underline dotted var(--accent);
+    text-underline-offset: 3px;
+    cursor: help;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .stat-box .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+  }
+
+  .stat-box .stat-value {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--bg-alt);
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+  }
+
+  .badge.sig { color: var(--sig); border-color: var(--sig); background: rgba(27, 110, 99, 0.08); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    section { padding: 64px 20px; }
+    .section-head { gap: 14px; }
+  }
+
+  .var-list {
+    list-style: none;
+    margin-top: 16px;
+  }
+
+  .var-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .var-list li:last-child { border-bottom: none; }
+
+  .var-name {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    min-width: 190px;
+    flex-shrink: 0;
+  }
+
+  .var-desc { color: var(--text-dim); font-size: 0.92rem; }
+
+  .model-spec {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-top: 20px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .chart-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 20px;
+    position: relative;
+    height: 420px;
+  }
+
+  .chart-wrap canvas { max-width: 100%; }
+
+  .chart-wide {
+    min-width: 1300px;
+    margin-top: 0;
+  }
+
+  @media (max-width: 700px) {
+    .chart-wrap { height: 340px; }
+  }
+
+  .chart-caption {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    margin-top: 12px;
+  }
+
+  ol, ul.plain {
+    margin-top: 12px;
+    padding-left: 20px;
+    color: var(--text-dim);
+  }
+
+  ol li, ul.plain li { margin-bottom: 8px; }
+
+  footer {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-link" href="#hero">Home</a>
+    <a class="nav-link" href="#question">Question</a>
+    <a class="nav-link" href="#methods">Data &amp; Methods</a>
+    <a class="nav-link" href="#descriptives">Descriptives</a>
+    <a class="nav-link" href="#correlation">Correlation</a>
+    <a class="nav-link" href="#regression">Regression</a>
+    <a class="nav-link" href="#robustness">Robustness</a>
+    <a class="nav-link" href="#charts">Charts</a>
+    <a class="nav-link" href="#limitations">Limitations</a>
+    <a class="nav-link" href="#conclusion">Conclusion</a>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Econometrics Term Paper</div>
+    <h1>The Effect of Fast Food Consumption on Obesity Rates Across United States</h1>
+    <p class="hero-subtitle">A cross-sectional OLS regression on 50 U.S. states examining what drives differences in adult obesity rates.</p>
+    <div class="hero-byline">
+      <span>Carolina Varanko</span>
+      <span>ECON 400, Econometrics</span>
+      <span>Spring 2026</span>
+    </div>
+  </div>
+</section>
+
+<section id="question">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">01</span>
+    <div>
+      <div class="section-kicker">The Question</div>
+      <h2>Research Question</h2>
+    </div>
+  </div>
+  <p class="section-intro">Obesity is one of the most pressing public health challenges in the United States. As of 2021, over one third of American adults were classified as obese, with rates varying considerably across states. Obesity-related medical costs are estimated at over $170 billion annually.</p>
+  <div class="card">
+    <p style="color: var(--text); font-size: 1.1rem;">What state-level factors explain variation in adult obesity rates, and does fast food density hold up as a driver once income, inactivity, diabetes, and urbanicity are controlled for?</p>
+  </div>
+  <p style="margin-top: 24px;">Understanding these determinants is relevant not only for public health policy but also for businesses in the food service and healthcare industries, which operate under increasing regulatory scrutiny as obesity-related costs continue to grow.</p>
+</section>
+
+<section id="methods">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">02</span>
+    <div>
+      <div class="section-kicker">Data &amp; Methods</div>
+      <h2>Sources, Variables &amp; Model</h2>
+    </div>
+  </div>
+  <p class="section-intro">The analysis draws on four public government data sources covering 50 states plus D.C. (Florida excluded due to insufficient 2021 BRFSS sample size).</p>
+
+  <h3 style="margin-bottom: 8px;">Variables</h3>
+  <ul class="var-list">
+    <li><span class="var-name">ObesityRate</span><span class="var-desc">Adult obesity rate (%), dependent variable. CDC BRFSS, 2021</span></li>
+    <li><span class="var-name">FastFoodDensity</span><span class="var-desc">Fast food establishments per person. USDA Food Environment Atlas, 2020</span></li>
+    <li><span class="var-name">MedianHouseholdIncome</span><span class="var-desc">Median household income ($). Census ACS 2023, Table S1901</span></li>
+    <li><span class="var-name">PhysicalInactivity</span><span class="var-desc">Share of adults reporting no leisure-time physical activity (%). CDC USDSS, 2021</span></li>
+    <li><span class="var-name">DiabetesRate</span><span class="var-desc">Adult diabetes prevalence (%). CDC USDSS, 2021</span></li>
+    <li><span class="var-name">Urban</span><span class="var-desc">Binary dummy, metro vs. non-metro. USDA Food Environment Atlas</span></li>
+    <li><span class="var-name">FFD_Income</span><span class="var-desc">Interaction term: FastFoodDensity × MedianHouseholdIncome</span></li>
+  </ul>
+
+  <h3 style="margin: 32px 0 8px;">Model</h3>
+  <p>A cross-sectional OLS regression is used: each state is one observation, and obesity rate is regressed on the six variables above simultaneously. In plain terms, the model asks how much obesity rates move with each factor while holding the other factors fixed.</p>
+  <div class="model-spec">ObesityRate = β0 + β1(FastFoodDensity) + β2(MedianHouseholdIncome)
+             + β3(PhysicalInactivity) + β4(DiabetesRate) + β5(Urban)
+             + β6(FFD_Income) + ε</div>
+</section>
+
+<section id="descriptives">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">03</span>
+    <div>
+      <div class="section-kicker">Descriptive Stats</div>
+      <h2>Summary Statistics</h2>
+    </div>
+  </div>
+  <p class="section-intro">n = 50 states plus D.C.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Mean</th><th>SD</th><th>Min</th><th>Max</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ObesityRate (%)</td><td>33.45</td><td>4.09</td><td>24.70 (D.C.)</td><td>40.60 (WV)</td></tr>
+        <tr><td>FastFoodDensity</td><td>0.72</td><td>0.22</td><td>0.30</td><td>1.16</td></tr>
+        <tr><td>MedianIncome ($)</td><td>77,674</td><td>13,019</td><td>54,203</td><td>108,210</td></tr>
+        <tr><td>PhysicalInactivity (%)</td><td>20.20</td><td>2.39</td><td>15.20</td><td>24.93</td></tr>
+        <tr><td>DiabetesRate (%)</td><td>8.68</td><td>1.03</td><td>6.95</td><td>11.25</td></tr>
+        <tr><td>Urban (dummy)</td><td>0.46</td><td>0.50</td><td>0</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="correlation">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">04</span>
+    <div>
+      <div class="section-kicker">Correlation</div>
+      <h2>Correlation Analysis</h2>
+    </div>
+  </div>
+  <p class="section-intro">Bivariate correlations with ObesityRate, before controlling for anything else.</p>
+  <div class="chart-wrap">
+    <canvas id="chart-heatmap" height="360"></canvas>
+    <div class="chart-caption">6×6 correlation matrix, n = 50</div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-label">Median Income</div><div class="stat-value" style="color: var(--neg);">-0.837</div></div>
+    <div class="stat-box"><div class="stat-label">Physical Inactivity</div><div class="stat-value" style="color: var(--pos);">0.753</div></div>
+    <div class="stat-box"><div class="stat-label">Diabetes Rate</div><div class="stat-value" style="color: var(--pos);">0.643</div></div>
+    <div class="stat-box"><div class="stat-label">Urban</div><div class="stat-value" style="color: var(--neg);">-0.260</div></div>
+    <div class="stat-box"><div class="stat-label">Fast Food Density</div><div class="stat-value" style="color: var(--text-faint);">0.232</div></div>
+  </div>
+  <div class="callout">PhysicalInactivity and DiabetesRate are highly intercorrelated (r = 0.821). This overlap explains why both variables lose significance individually once entered into the same regression.</div>
+</section>
+
+<section id="regression">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">05</span>
+    <div>
+      <div class="section-kicker">Regression Results</div>
+      <h2>Only Median Household Income Is Significant</h2>
+    </div>
+  </div>
+  <p class="section-intro">Full OLS model, all six predictors entered simultaneously.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-label">R²</div><div class="stat-value">0.7964</div></div>
+    <div class="stat-box"><div class="stat-label">Adj. R²</div><div class="stat-value">0.768</div></div>
+    <div class="stat-box"><div class="stat-label">F-statistic</div><div class="stat-value">28.03</div></div>
+    <div class="stat-box"><div class="stat-label">n</div><div class="stat-value">50</div></div>
+  </div>
+
+  <div class="table-scroll" style="margin-top: 32px;">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Estimate</th><th>Std. Error</th><th>t</th><th class="p-col-highlight" title="Click the explainer below to see what this column means">p</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Intercept</td><td>38.1281</td><td>7.8808</td><td>4.838</td><td>&lt;0.001 ***</td></tr>
+        <tr><td>FastFoodDensity</td><td>1.4251</td><td>8.5506</td><td>0.167</td><td>0.8684</td></tr>
+        <tr class="row-significant"><td>MedianHouseholdIncome <span class="badge sig">significant</span></td><td>-0.0002</td><td>0.0001</td><td>-2.594</td><td>0.0129 *</td></tr>
+        <tr><td>PhysicalInactivity</td><td>0.2948</td><td>0.2605</td><td>1.132</td><td>0.2641</td></tr>
+        <tr><td>DiabetesRate</td><td>0.4776</td><td>0.5014</td><td>0.952</td><td>0.3462</td></tr>
+        <tr><td>Urban</td><td>-1.0019</td><td>0.6183</td><td>-1.621</td><td>0.1124</td></tr>
+        <tr><td>FFD_Income</td><td>0.0000</td><td>0.0001</td><td>0.124</td><td>0.9022</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="info-toggle" aria-expanded="false" data-target="panel-significance">
+    What does "statistically significant" mean? <span class="arrow">▾</span>
+  </button>
+  <div id="panel-significance" class="info-panel" hidden>
+    <p>The <strong>p</strong> column is the odds that a variable's apparent effect is just random noise in this particular sample of 50 states, rather than a real pattern. A p-value of 0.05 means a 5% chance the result is a fluke. The convention is: below 0.05 counts as "statistically significant," meaning the evidence is strong enough to trust.</p>
+    <p>In this table, MedianHouseholdIncome has p = 0.0129 (below 0.05), so it clears the bar. FastFoodDensity has p = 0.8684, an 87% chance its measured relationship with obesity is just noise, which is why it is not treated as a real effect here. That does not prove fast food is irrelevant; it means this data does not provide strong enough evidence that it matters once the other variables are controlled for.</p>
+    <p>The asterisks are shorthand for the same idea: *** means p &lt; 0.001, ** means p &lt; 0.01, * means p &lt; 0.05.</p>
+  </div>
+
+  <div class="callout win">Only MedianHouseholdIncome is significant: a $1,000 increase in median income is associated with a 0.20 percentage point decrease in obesity rate, holding all else constant.</div>
+</section>
+
+<section id="robustness">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">06</span>
+    <div>
+      <div class="section-kicker">Robustness Checks</div>
+      <h2>Testing the Model</h2>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="stat-label" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Breusch-Pagan Test</div>
+      <p style="color: var(--text);">BP = 7.184, df = 6, p = 0.3042</p>
+      <p style="margin-top: 6px;">Fail to reject H0, no heteroskedasticity detected.</p>
+      <button class="why-toggle" aria-expanded="false" data-target="why-bp">Why this matters <span class="arrow">▾</span></button>
+      <div id="why-bp" class="why-panel" hidden>
+        <p>Some regressions quietly let a few noisy states distort the results, making the reported error margins untrustworthy. This test checks for exactly that pattern, called heteroskedasticity. Since it passed (p = 0.30, above 0.05), the model's standard errors, and the significance results built on them, can be taken at face value.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat-label" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">HC1 Robust SEs</div>
+      <p style="color: var(--text);">Applied as a precaution despite passing BP test.</p>
+      <p style="margin-top: 6px;">MedianHouseholdIncome strengthens to p = 0.001 (1% level); all else unchanged.</p>
+      <button class="why-toggle" aria-expanded="false" data-target="why-robust">Why this matters <span class="arrow">▾</span></button>
+      <div id="why-robust" class="why-panel" hidden>
+        <p>Even though the model passed the heteroskedasticity test, robust standard errors are applied as a safety net: they recompute the error margins in a way that stays valid even if the earlier test missed something. Here, the income finding gets stronger under this stricter check, not weaker, which is a good sign that it is not a fragile result.</p>
+      </div>
+    </div>
+  </div>
+  <h3 style="margin: 32px 0 8px;">Multicollinearity Check (VIF)</h3>
+  <p>Checked without the interaction term to assess multicollinearity among predictors.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>VIF</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FastFoodDensity</td><td>1.03</td></tr>
+        <tr><td>MedianIncome</td><td>1.88</td></tr>
+        <tr><td>PhysicalInactivity</td><td>4.68</td></tr>
+        <tr><td>DiabetesRate</td><td>3.25</td></tr>
+        <tr><td>Urban</td><td>1.22</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top: 16px;">All values remain below the conventional threshold of 10, no multicollinearity concern.</p>
+  <button class="why-toggle" aria-expanded="false" data-target="why-vif">Why this matters <span class="arrow">▾</span></button>
+  <div id="why-vif" class="why-panel" hidden>
+    <p>When two predictor variables move together too closely, like PhysicalInactivity and DiabetesRate here (r = 0.821), the regression cannot fully tell their individual effects apart, and both end up looking weaker or less significant than they really are. VIF measures how much each variable overlaps with the others; a value above 10 signals a serious problem. The highest value here, PhysicalInactivity at 4.68, reflects that overlap but stays well under the danger threshold, so the coefficient estimates remain usable.</p>
+  </div>
+</section>
+
+<section id="charts">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">07</span>
+    <div>
+      <div class="section-kicker">Figures</div>
+      <h2>Figures 1&ndash;3</h2>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom: 8px;">Figure 1: Obesity Rate by State (Ranked)</h3>
+  <p>D.C. lowest at 24.70%, West Virginia highest at 40.60%.</p>
+  <div class="table-scroll" style="margin-top: 20px;">
+    <div class="chart-wrap chart-wide">
+      <canvas id="chart-bar-states"></canvas>
+    </div>
+  </div>
+  <div class="chart-caption">Ranked ascending by ObesityRate, n = 50</div>
+
+  <h3 style="margin: 40px 0 8px;">Figure 2: Obesity Rate vs Median Household Income</h3>
+  <p>r = -0.837.</p>
+  <div class="chart-wrap">
+    <canvas id="chart-scatter-income"></canvas>
+  </div>
+  <div class="chart-caption">OLS fit line computed from the 50-state dataset</div>
+
+  <h3 style="margin: 40px 0 8px;">Figure 3: Obesity Rate vs Physical Inactivity Rate</h3>
+  <p>r = 0.753.</p>
+  <div class="chart-wrap">
+    <canvas id="chart-scatter-inactivity"></canvas>
+  </div>
+  <div class="chart-caption">OLS fit line computed from the 50-state dataset</div>
+</section>
+
+<section id="limitations">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">08</span>
+    <div>
+      <div class="section-kicker">Limitations</div>
+      <h2>Study Limitations</h2>
+    </div>
+  </div>
+  <ol>
+    <li>Florida is excluded due to insufficient 2021 BRFSS sample size.</li>
+    <li>Fast food density for Maine, New York, and Texas uses county-level averages, since state-level values were suppressed in the source data.</li>
+    <li>Data sources span different years: income (2023), fast food density (2020), health variables (2021).</li>
+    <li>The cross-sectional design does not support causal inference. Unmeasured confounders such as cultural diet patterns and state health investment are possible.</li>
+  </ol>
+</section>
+
+<section id="conclusion">
+  <div class="section-head">
+    <span class="section-num" aria-hidden="true">09</span>
+    <div>
+      <div class="section-kicker">Conclusions</div>
+      <h2>Conclusions &amp; Policy</h2>
+    </div>
+  </div>
+  <p class="section-intro">Median household income is the only individually significant predictor. Higher-income states consistently exhibit lower obesity rates. This finding holds under robust standard errors.</p>
+  <div class="card">
+    <p style="color: var(--text);">Income-related interventions, such as expanding access to affordable healthy food in lower-income states and subsidizing healthier food alternatives, are likely to have the greatest impact on reducing obesity. Fast food density alone is not a reliable lever once other factors are controlled for.</p>
+  </div>
+</section>
+
+<footer>
+  Carolina Varanko, ECON 400, Spring 2026
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1/dist/chartjs-chart-matrix.min.js"></script>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+  sections.forEach(section => observer.observe(section));
+
+  document.querySelectorAll('.info-toggle, .why-toggle').forEach(btn => {
+    const panel = document.getElementById(btn.dataset.target);
+    if (!panel) return;
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      panel.hidden = expanded;
+    });
+  });
+</script>
+
+<script>
+  // Shared Chart.js styling to match the page's palette and type system
+  Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+  Chart.defaults.plugins.tooltip.backgroundColor = '#221B14';
+  Chart.defaults.plugins.tooltip.titleColor = '#FAF6EE';
+  Chart.defaults.plugins.tooltip.bodyColor = '#FAF6EE';
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 6;
+  Chart.defaults.plugins.tooltip.titleFont = { family: "'IBM Plex Mono', monospace", size: 12, weight: '600' };
+  Chart.defaults.plugins.tooltip.bodyFont = { family: "'IBM Plex Mono', monospace", size: 12 };
+
+  const AXIS_TICK_COLOR = '#7A6E5C';
+  const AXIS_GRID_COLOR = '#E3D8C3';
+  const AXIS_FONT = { family: "'IBM Plex Mono', monospace", size: 11 };
+
+  // Table 2: Correlation Matrix (content-brief.md)
+  const corrLabels = ['Obesity', 'FastFood', 'Income', 'Inactivity', 'Diabetes', 'Urban'];
+  const corrMatrix = [
+    [ 1.000,  0.232, -0.837,  0.753,  0.643, -0.260],
+    [ 0.232,  1.000, -0.099,  0.143,  0.142,  0.022],
+    [-0.837, -0.099,  1.000, -0.674, -0.548,  0.108],
+    [ 0.753,  0.143, -0.674,  1.000,  0.821, -0.323],
+    [ 0.643,  0.142, -0.548,  0.821,  1.000, -0.138],
+    [-0.260,  0.022,  0.108, -0.323, -0.138,  1.000]
+  ];
+
+  const corrData = [];
+  corrMatrix.forEach((row, yIdx) => {
+    row.forEach((v, xIdx) => {
+      corrData.push({ x: corrLabels[xIdx], y: corrLabels[yIdx], v });
+    });
+  });
+
+  function corrRGB(v) {
+    const neg = [193, 68, 14];    // --accent (terracotta)
+    const mid = [255, 255, 255];  // --card (white)
+    const pos = [27, 110, 99];    // --teal
+    const t = Math.abs(v);
+    const c = v < 0 ? neg : pos;
+    return [
+      Math.round(mid[0] + (c[0] - mid[0]) * t),
+      Math.round(mid[1] + (c[1] - mid[1]) * t),
+      Math.round(mid[2] + (c[2] - mid[2]) * t)
+    ];
+  }
+
+  function textColorForRGB([r, g, b]) {
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.55 ? '#221B14' : '#FAF6EE';
+  }
+
+  new Chart(document.getElementById('chart-heatmap'), {
+    type: 'matrix',
+    data: {
+      datasets: [{
+        data: corrData,
+        backgroundColor: (ctx) => `rgb(${corrRGB(ctx.raw.v).join(',')})`,
+        borderColor: '#FAF6EE',
+        borderWidth: 2,
+        width: ({ chart }) => (chart.chartArea || {}).width / corrLabels.length - 2,
+        height: ({ chart }) => (chart.chartArea || {}).height / corrLabels.length - 2
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: () => '',
+            label: (ctx) => `${ctx.raw.y} × ${ctx.raw.x}: ${ctx.raw.v.toFixed(3)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'category',
+          labels: corrLabels,
+          offset: true,
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { display: false }
+        },
+        y: {
+          type: 'category',
+          labels: corrLabels,
+          offset: true,
+          reverse: true,
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'corrValueLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx, scales } = chart;
+        ctx.save();
+        ctx.font = "600 11px 'IBM Plex Mono', monospace";
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        corrData.forEach((cell) => {
+          const xPix = scales.x.getPixelForValue(cell.x);
+          const yPix = scales.y.getPixelForValue(cell.y);
+          ctx.fillStyle = textColorForRGB(corrRGB(cell.v));
+          ctx.fillText(cell.v.toFixed(2), xPix, yPix);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+</script>
+
+<script>
+  // dataset_termpaper_cvaranko.csv, n = 50 (50 states + D.C., Florida excluded)
+  const stateData = [
+    { state: 'Alabama', obesity: 39.9, income: 62212, inactivity: 23.37 },
+    { state: 'Alaska', obesity: 33.5, income: 86631, inactivity: 20.00 },
+    { state: 'Arizona', obesity: 31.3, income: 77315, inactivity: 20.72 },
+    { state: 'Arkansas', obesity: 38.6, income: 58700, inactivity: 23.88 },
+    { state: 'California', obesity: 27.6, income: 95521, inactivity: 17.75 },
+    { state: 'Colorado', obesity: 25.1, income: 92911, inactivity: 16.51 },
+    { state: 'Connecticut', obesity: 30.4, income: 91665, inactivity: 17.71 },
+    { state: 'Delaware', obesity: 33.9, income: 81361, inactivity: 24.93 },
+    { state: 'District of Columbia', obesity: 24.7, income: 108210, inactivity: 15.20 },
+    { state: 'Georgia', obesity: 33.9, income: 74632, inactivity: 23.84 },
+    { state: 'Hawaii', obesity: 25.0, income: 95322, inactivity: 17.64 },
+    { state: 'Idaho', obesity: 31.6, income: 74942, inactivity: 19.48 },
+    { state: 'Illinois', obesity: 34.2, income: 80306, inactivity: 20.08 },
+    { state: 'Indiana', obesity: 36.3, income: 69477, inactivity: 21.36 },
+    { state: 'Iowa', obesity: 36.4, income: 71433, inactivity: 20.34 },
+    { state: 'Kansas', obesity: 36.0, income: 70333, inactivity: 20.56 },
+    { state: 'Kentucky', obesity: 40.3, income: 61118, inactivity: 21.59 },
+    { state: 'Louisiana', obesity: 38.6, income: 58229, inactivity: 22.69 },
+    { state: 'Maine', obesity: 31.9, income: 73733, inactivity: 21.48 },
+    { state: 'Maryland', obesity: 34.3, income: 98678, inactivity: 20.65 },
+    { state: 'Massachusetts', obesity: 27.4, income: 99858, inactivity: 17.97 },
+    { state: 'Michigan', obesity: 34.4, income: 69183, inactivity: 18.94 },
+    { state: 'Minnesota', obesity: 32.4, income: 85086, inactivity: 19.17 },
+    { state: 'Mississippi', obesity: 39.1, income: 54203, inactivity: 24.85 },
+    { state: 'Missouri', obesity: 37.2, income: 68545, inactivity: 22.04 },
+    { state: 'Montana', obesity: 31.8, income: 70804, inactivity: 19.62 },
+    { state: 'Nebraska', obesity: 35.9, income: 74590, inactivity: 21.04 },
+    { state: 'Nevada', obesity: 31.3, income: 76364, inactivity: 18.72 },
+    { state: 'New Hampshire', obesity: 30.6, income: 96838, inactivity: 18.28 },
+    { state: 'New Jersey', obesity: 28.2, income: 99781, inactivity: 20.46 },
+    { state: 'New Mexico', obesity: 34.6, income: 62268, inactivity: 19.55 },
+    { state: 'New York', obesity: 29.1, income: 82095, inactivity: 21.69 },
+    { state: 'North Carolina', obesity: 36.0, income: 70804, inactivity: 19.59 },
+    { state: 'North Dakota', obesity: 35.2, income: 76525, inactivity: 20.91 },
+    { state: 'Ohio', obesity: 37.8, income: 67769, inactivity: 23.25 },
+    { state: 'Oklahoma', obesity: 39.4, income: 62138, inactivity: 22.16 },
+    { state: 'Oregon', obesity: 30.4, income: 80160, inactivity: 17.75 },
+    { state: 'Pennsylvania', obesity: 33.3, income: 73824, inactivity: 19.49 },
+    { state: 'Rhode Island', obesity: 30.1, income: 84972, inactivity: 16.70 },
+    { state: 'South Carolina', obesity: 36.1, income: 67804, inactivity: 23.85 },
+    { state: 'South Dakota', obesity: 38.4, income: 71810, inactivity: 19.94 },
+    { state: 'Tennessee', obesity: 35.0, income: 67631, inactivity: 20.91 },
+    { state: 'Texas', obesity: 36.1, income: 75780, inactivity: 22.96 },
+    { state: 'Utah', obesity: 30.9, income: 93421, inactivity: 16.64 },
+    { state: 'Vermont', obesity: 29.0, income: 81211, inactivity: 16.18 },
+    { state: 'Virginia', obesity: 34.2, income: 89931, inactivity: 19.73 },
+    { state: 'Washington', obesity: 28.8, income: 94605, inactivity: 17.15 },
+    { state: 'West Virginia', obesity: 40.6, income: 55948, inactivity: 23.31 },
+    { state: 'Wisconsin', obesity: 33.9, income: 74631, inactivity: 17.91 },
+    { state: 'Wyoming', obesity: 32.0, income: 72415, inactivity: 19.42 }
+  ];
+
+  function olsFit(points, xKey, yKey) {
+    const n = points.length;
+    const xMean = points.reduce((s, p) => s + p[xKey], 0) / n;
+    const yMean = points.reduce((s, p) => s + p[yKey], 0) / n;
+    let num = 0, den = 0;
+    points.forEach(p => {
+      num += (p[xKey] - xMean) * (p[yKey] - yMean);
+      den += (p[xKey] - xMean) ** 2;
+    });
+    const slope = num / den;
+    const intercept = yMean - slope * xMean;
+    return { slope, intercept };
+  }
+
+  // ---- Bar chart: ObesityRate by state, ranked ascending ----
+  const sortedStates = [...stateData].sort((a, b) => a.obesity - b.obesity);
+
+  new Chart(document.getElementById('chart-bar-states'), {
+    type: 'bar',
+    data: {
+      labels: sortedStates.map(d => d.state),
+      datasets: [{
+        data: sortedStates.map(d => d.obesity),
+        backgroundColor: sortedStates.map(d => {
+          if (d.state === 'District of Columbia') return '#1B6E63';
+          if (d.state === 'West Virginia') return '#C1440E';
+          return '#CBB98F';
+        }),
+        borderRadius: 2,
+        barPercentage: 0.9,
+        categoryPercentage: 0.9
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].label,
+            label: (ctx) => `Obesity rate: ${ctx.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: AXIS_TICK_COLOR, font: { family: "'IBM Plex Mono', monospace", size: 10 }, maxRotation: 90, minRotation: 90 },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'Obesity Rate (%)', color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          min: 0,
+          max: 45,
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { color: AXIS_GRID_COLOR }
+        }
+      }
+    }
+  });
+
+  // ---- Scatter: ObesityRate vs MedianHouseholdIncome, with OLS fit line ----
+  const incomeFit = olsFit(stateData, 'income', 'obesity');
+  const incomeXs = stateData.map(d => d.income);
+  const incomeLine = [
+    { x: Math.min(...incomeXs), y: incomeFit.intercept + incomeFit.slope * Math.min(...incomeXs) },
+    { x: Math.max(...incomeXs), y: incomeFit.intercept + incomeFit.slope * Math.max(...incomeXs) }
+  ];
+
+  new Chart(document.getElementById('chart-scatter-income'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'State',
+          data: stateData.map(d => ({ x: d.income, y: d.obesity, state: d.state })),
+          backgroundColor: '#1B6E63',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointHitRadius: 10
+        },
+        {
+          label: 'OLS fit',
+          type: 'line',
+          data: incomeLine,
+          borderColor: '#C98A1F',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: (item) => item.dataset.label !== 'OLS fit',
+          callbacks: {
+            label: (ctx) => `${ctx.raw.state}: $${ctx.raw.x.toLocaleString()}, ${ctx.raw.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Median Household Income ($)', color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { color: AXIS_GRID_COLOR }
+        },
+        y: {
+          title: { display: true, text: 'Obesity Rate (%)', color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { color: AXIS_GRID_COLOR }
+        }
+      }
+    }
+  });
+
+  // ---- Scatter: ObesityRate vs PhysicalInactivity, with OLS fit line ----
+  const inactivityFit = olsFit(stateData, 'inactivity', 'obesity');
+  const inactivityXs = stateData.map(d => d.inactivity);
+  const inactivityLine = [
+    { x: Math.min(...inactivityXs), y: inactivityFit.intercept + inactivityFit.slope * Math.min(...inactivityXs) },
+    { x: Math.max(...inactivityXs), y: inactivityFit.intercept + inactivityFit.slope * Math.max(...inactivityXs) }
+  ];
+
+  new Chart(document.getElementById('chart-scatter-inactivity'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'State',
+          data: stateData.map(d => ({ x: d.inactivity, y: d.obesity, state: d.state })),
+          backgroundColor: '#1B6E63',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointHitRadius: 10
+        },
+        {
+          label: 'OLS fit',
+          type: 'line',
+          data: inactivityLine,
+          borderColor: '#C98A1F',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: (item) => item.dataset.label !== 'OLS fit',
+          callbacks: {
+            label: (ctx) => `${ctx.raw.state}: ${ctx.raw.x.toFixed(1)}%, ${ctx.raw.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Physical Inactivity Rate (%)', color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { color: AXIS_GRID_COLOR }
+        },
+        y: {
+          title: { display: true, text: 'Obesity Rate (%)', color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          ticks: { color: AXIS_TICK_COLOR, font: AXIS_FONT },
+          grid: { color: AXIS_GRID_COLOR }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
