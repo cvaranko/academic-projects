@@ -43,6 +43,8 @@ A digital marketing analysis of Spotify examining ecosystem strengths and weakne
 ### 🧙 Harry Potter sentiment analysis
 > R · NLP · Text Mining · NRC / Bing / AFINN
 
+**[view the live presentation →](URL)** (not live)
+
 A text mining project applying NRC, Bing, and AFINN sentiment lexicons to the Harry Potter series. Analyzes emotional tone across books, chapters, and individual words to surface narrative patterns and conflict-driven language shifts.
 
 ---
@@ -63,7 +65,9 @@ An OLS regression analysis examining the relationship between U.S. GDP and Perso
 
 ### 🔬 multicollinearity, non-linearity & heteroskedasticity
 > R · OLS Regression · Econometrics
-> 
+
+**[view the live presentation →](URL)** (not live)
+
 An OLS regression analysis examining the determinants of the 30-year fixed mortgage rate using monthly FRED data from 1996 to 2026. Applies six model specifications with stepwise variable reduction based on significance and VIF diagnostics, a log transformation on CPI, and Breusch-Pagan and White tests to assess heteroskedasticity.
 
 ---
