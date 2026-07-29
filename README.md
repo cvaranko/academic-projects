@@ -23,7 +23,7 @@ An in-depth case study of the 2013 Target data breach, tracing the attack timeli
 ### 📈 regression analysis: food prices & taste scores
 > Excel · Simple Linear Regression · Descriptive Statistics
 > 
-**[view the live presentation →](URL)** (not live yet)
+**[view the live presentation →](https://cvaranko.github.io/academic-projects/regression-analysis-food-prices/)**
 
 A simple linear regression analysis examining the relationship between food taste scores and meal prices across New York City restaurants. Includes descriptive statistics, assumption checks, outlier identification, and full model evaluation.
 

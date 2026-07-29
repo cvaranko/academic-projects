@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regression Analysis, Food Prices and Taste Scores</title>
+<meta name="description" content="A simple linear regression on 168 New York City restaurants examining whether food taste score predicts price per person per meal. Includes descriptive statistics, assumption checks, and interactive charts built from the full dataset.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cvaranko.github.io/academic-projects/regression-analysis-food-prices/">
+<meta property="og:title" content="Regression Analysis, Food Prices and Taste Scores">
+<meta property="og:description" content="A simple linear regression on 168 New York City restaurants examining whether food taste score predicts price per person per meal.">
+<meta property="og:image" content="https://cvaranko.github.io/academic-projects/regression-analysis-food-prices/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Regression Analysis, Food Prices and Taste Scores">
+<meta name="twitter:description" content="A simple linear regression on 168 New York City restaurants examining whether food taste score predicts price per person per meal.">
+<meta name="twitter:image" content="https://cvaranko.github.io/academic-projects/regression-analysis-food-prices/og-image.png">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzdBMjMzMSIvPjxsaW5lIHgxPSI3IiB5MT0iMjQiIHgyPSIyNSIgeTI9IjciIHN0cm9rZT0iI0ZCRjFFQSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSI5IiBjeT0iMjEiIHI9IjIuMyIgZmlsbD0iI0ZCRjFFQSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTQiIHI9IjIuMyIgZmlsbD0iI0ZCRjFFQSIvPjxjaXJjbGUgY3g9IjIzIiBjeT0iOSIgcj0iMi4zIiBmaWxsPSIjRkJGMUVBIi8+PC9zdmc+">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf1ea;
+    --bg-alt: #fffcf8;
+    --ink: #2b1b16;
+    --ink-soft: #5e4a3e;
+    --line: #e9dace;
+    --accent: #7a2331;
+    --accent-2: #4b6b3a;
+    --accent-soft: rgba(122, 35, 49, 0.12);
+    --table-head: #f3e6dc;
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+    --max: 860px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  h1, h2, .eqn, .stat-card .value, .predict-card .result {
+    font-family: var(--font-display);
+  }
+
+  section {
+    scroll-margin-top: 76px;
+  }
+
+  .wrap {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(251, 241, 234, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.82rem;
+  }
+
+  .nav-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 4px 2px;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:focus {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* Hero */
+  #hero {
+    padding: 96px 0 64px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #fdf6f0 0%, var(--bg) 100%);
+  }
+
+  .accent-rule {
+    display: block;
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    color: var(--accent-2);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    line-height: 1.2;
+    margin: 0 0 18px;
+  }
+
+  .byline {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    margin: 24px 0 0;
+  }
+
+  .subquestion {
+    font-size: 1.1rem;
+    margin: 18px 0 0;
+    max-width: 640px;
+  }
+
+  /* Section rhythm */
+  .section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-label {
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    margin: 0 0 20px;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    margin: 28px 0 10px;
+  }
+
+  p {
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+
+  .lede {
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+    max-width: 640px;
+  }
+
+  /* Tables */
+  .table-scroll {
+    overflow-x: auto;
+    margin: 18px 0 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 480px;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    background: var(--bg-alt);
+  }
+
+  caption {
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 8px 12px 0;
+    caption-side: top;
+  }
+
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  thead th {
+    background: var(--table-head);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.num, th.num {
+    text-align: right;
+  }
+
+  /* Stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .stat-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent-2);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .stat-card .label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .stat-card .value {
+    font-family: var(--font-body);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Equation block */
+  .eqn {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 16px 20px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 20px 0;
+  }
+
+  .eqn small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Two column */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* Charts */
+  .chart-grid {
+    display: grid;
+    gap: 22px;
+    margin-top: 20px;
+  }
+
+  .chart-box {
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent-2);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    padding: 22px;
+    min-width: 0;
+  }
+
+  .chart-box .chart-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 0 0 4px;
+  }
+
+  .chart-box .chart-axes {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+
+  .chart-canvas {
+    position: relative;
+    height: 320px;
+    min-width: 0;
+  }
+
+  .chart-canvas canvas {
+    max-width: 100%;
+  }
+
+  .chart-note {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+  }
+
+  .page-note {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--line);
+    padding-left: 12px;
+    margin: 14px 0 0;
+  }
+
+  .page-note strong {
+    color: var(--ink);
+  }
+
+  /* Expandable notes */
+  .detail-note {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 18px;
+  }
+
+  .detail-note summary {
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--accent);
+  }
+
+  .detail-note[open] summary {
+    margin-bottom: 10px;
+  }
+
+  .detail-note .detail-body {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+
+  .detail-note .detail-body p {
+    margin: 0 0 10px;
+  }
+
+  .detail-note .detail-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Prediction cards */
+  .predict-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .predict-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent-2);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .predict-card .input {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .predict-card .calc {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
+  .predict-card .result {
+    font-family: var(--font-body);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Status pill */
+  .status {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+
+  .status.satisfied {
+    background: #e6ecd6;
+    color: #52691f;
+  }
+
+  .status.partial {
+    background: #f5e4bc;
+    color: #8a5a12;
+  }
+
+  /* Summary */
+  #summary {
+    background: var(--accent-soft);
+  }
+
+  #summary .lede {
+    max-width: 100%;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  footer {
+    padding: 32px 0 60px;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+  }
+
+  footer a {
+    color: var(--accent-2);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    #hero {
+      padding: 56px 0 40px;
+    }
+
+    .section {
+      padding: 44px 0;
+    }
+
+    .nav-inner {
+      padding: 12px 16px;
+    }
+
+    .nav-links {
+      gap: 4px 10px;
+      font-size: 0.76rem;
+    }
+
+    .chart-canvas {
+      height: 240px;
+    }
+
+    table {
+      font-size: 0.82rem;
+    }
+
+    th, td {
+      padding: 8px 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav aria-label="Section navigation">
+  <div class="nav-inner">
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#question">Question</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#distribution">Distribution</a></li>
+      <li><a href="#regression">Regression</a></li>
+      <li><a href="#charts">Charts</a></li>
+      <li><a href="#predictions">Predictions</a></li>
+      <li><a href="#assumptions">Assumptions</a></li>
+      <li><a href="#summary">Summary</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header id="hero">
+  <div class="wrap">
+    <span class="accent-rule"></span>
+    <p class="eyebrow">BA240, Academic Project</p>
+    <h1>Regression Analysis, Food Prices and Taste Scores</h1>
+    <p class="subquestion">A simple linear regression on 168 New York City restaurants examining whether food taste score predicts price per person per meal.</p>
+    <p class="byline">Carolina Varanko, BA240, Spring 2025</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="section" id="question">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">01. The Question</p>
+      <h2>What is being tested</h2>
+      <p class="lede">Does a restaurant's food taste score predict its price per person per meal in New York City?</p>
+      <p>This project tests that relationship using simple linear regression. Food taste score is the independent variable. Price per person per meal is the dependent variable. The goal is to measure how strongly, and in what direction, taste relates to price across a sample of New York City restaurants.</p>
+    </div>
+  </section>
+
+  <section class="section" id="data">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">02. The Data</p>
+      <h2>Variables and sample</h2>
+      <p class="lede">168 New York City restaurants, each with a measured food taste score and an observed price per person per meal.</p>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Independent (X)</div>
+          <div class="value" style="font-size:1rem;">Food Taste Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Dependent (Y)</div>
+          <div class="value" style="font-size:1rem;">Price Per Person ($)</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Sample Size</div>
+          <div class="value">168</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Method</div>
+          <div class="value" style="font-size:1rem;">Simple Linear Regression</div>
+        </div>
+      </div>
+
+      <h3>Descriptive statistics</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Statistic</th>
+              <th class="num">Food Taste Score (X)</th>
+              <th class="num">Price Per Person (Y)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Mean</td><td class="num">20.60</td><td class="num">42.70</td></tr>
+            <tr><td>Median</td><td class="num">20.50</td><td class="num">43.00</td></tr>
+            <tr><td>Mode</td><td class="num">20.00</td><td class="num">38.00</td></tr>
+            <tr><td>Standard Deviation</td><td class="num">1.98</td><td class="num">9.29</td></tr>
+            <tr><td>Minimum</td><td class="num">16.00</td><td class="num">19.00</td></tr>
+            <tr><td>25th Percentile</td><td class="num">19.00</td><td class="num">36.00</td></tr>
+            <tr><td>75th Percentile</td><td class="num">22.00</td><td class="num">50.00</td></tr>
+            <tr><td>Maximum</td><td class="num">25.00</td><td class="num">65.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="distribution">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">03. Distribution Shape</p>
+      <h2>How each variable is spread</h2>
+      <div class="two-col">
+        <div>
+          <h3>Food Taste Score</h3>
+          <p>Left skewed. Most scores fall between 19 and 23. The distribution roughly follows the empirical rule, with about 68% of scores within 1 standard deviation of the mean, about 95% within 2 standard deviations, and nearly 100% within 3 standard deviations.</p>
+          <p>No outliers detected.</p>
+        </div>
+        <div>
+          <h3>Price Per Person</h3>
+          <p>Right skewed. Most restaurants charge between $38 and $52. The distribution does not fully satisfy the empirical rule, with fewer observations within 1 standard deviation than a normal distribution would predict.</p>
+          <p>The 25th percentile is $36.00 and the 75th percentile is $50.00, giving a standard 1.5 times IQR bound of $15.00 to $71.00. No outliers detected. The minimum price of $19.00 and the maximum price of $65.00 both fall within that range.</p>
+          <p class="page-note"><strong>Note:</strong> this differs from the original PDF, which listed a $22.50 bound and 10 outliers. Recalculating the 25th percentile directly from the full 168 row dataset gives $36.00, not $39.00, which changes the bound and outlier count shown above.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="regression">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">04. The Regression</p>
+      <h2>Equation and fit</h2>
+
+      <div class="eqn">
+        Y = 2.94X − 17.83
+        <small>Y = predicted price per person, X = food taste score</small>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td>Multiple R</td><td class="num">0.627</td></tr>
+            <tr><td>R Square</td><td class="num">0.393</td></tr>
+            <tr><td>Adjusted R Square</td><td class="num">0.390</td></tr>
+            <tr><td>Standard Error</td><td class="num">7.26</td></tr>
+            <tr><td>Observations</td><td class="num">168</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:18px;">R squared of 0.393 means about 39.3% of the variation in price is explained by taste score. About 60.7% is explained by other factors. Multiple R of 0.627 indicates a moderate positive correlation.</p>
+
+      <details class="detail-note">
+        <summary>What does R squared mean in plain terms?</summary>
+        <div class="detail-body">
+          <p>Price per person is shaped by many things. Taste score accounts for about 39% of the differences in price across restaurants.</p>
+          <p>The other 61% comes from factors not measured here, such as location, restaurant type, or service quality.</p>
+        </div>
+      </details>
+
+      <h3>ANOVA</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th class="num">df</th>
+              <th class="num">SS</th>
+              <th class="num">MS</th>
+              <th class="num">F</th>
+              <th class="num">Significance F</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Regression</td>
+              <td class="num">1</td>
+              <td class="num">5670.30</td>
+              <td class="num">5670.30</td>
+              <td class="num">107.56</td>
+              <td class="num">9.63 &times; 10&#8315;&sup2;&#8304;</td>
+            </tr>
+            <tr>
+              <td>Residual</td>
+              <td class="num">166</td>
+              <td class="num">8751.21</td>
+              <td class="num">52.72</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+            </tr>
+            <tr>
+              <td>Total</td>
+              <td class="num">167</td>
+              <td class="num">14421.52</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Coefficients</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Term</th>
+              <th class="num">Coefficient</th>
+              <th class="num">Std. Error</th>
+              <th class="num">t Stat</th>
+              <th class="num">P value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Intercept</td>
+              <td class="num">&minus;17.83</td>
+              <td class="num">5.86</td>
+              <td class="num">&minus;3.04</td>
+              <td class="num">0.0027</td>
+            </tr>
+            <tr>
+              <td>Food Taste Score</td>
+              <td class="num">2.94</td>
+              <td class="num">0.28</td>
+              <td class="num">10.37</td>
+              <td class="num">&lt; 0.0001</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:18px;">Both the intercept and the food taste score coefficient are statistically significant. The model as a whole is significant, with Significance F far below 0.05 and F equal to 107.56.</p>
+    </div>
+  </section>
+
+  <section class="section" id="charts">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">05. Charts</p>
+      <h2>Visualizing the relationship</h2>
+      <p class="lede">Built from the full 168 restaurant dataset and Excel's own regression and histogram output.</p>
+
+      <div class="chart-grid">
+        <div class="chart-box">
+          <p class="chart-title">Scatter plot</p>
+          <p class="chart-axes">X: Food Taste Score &nbsp;&middot;&nbsp; Y: Price Per Person ($)</p>
+          <div class="chart-canvas"><canvas id="chart-scatter" role="img" aria-label="Scatter plot of Food Taste Score against Price Per Person with regression line"></canvas></div>
+          <p class="chart-note">Line shown is the regression equation Y = 2.94X &minus; 17.83. The workbook also reports a raw trendline of y = 0.1338x + 14.883, R&sup2; = 0.3932, but that equation is the reverse fit, Food Taste Score predicted from Price, so it is not plotted here to avoid misrepresenting the data.</p>
+          <p class="page-note"><strong>Note:</strong> the original PDF shows both lines on one scatter chart. Plotting the raw trendline as written on this axis layout would place it far below the actual points, so only the correct regression line is drawn here.</p>
+        </div>
+
+        <div class="chart-box">
+          <p class="chart-title">Line fit plot</p>
+          <p class="chart-axes">Actual vs. predicted Price Per Person against Food Taste Score</p>
+          <div class="chart-canvas"><canvas id="chart-linefit" role="img" aria-label="Line fit plot of actual versus predicted Price Per Person"></canvas></div>
+        </div>
+
+        <div class="chart-box">
+          <p class="chart-title">Residual plot</p>
+          <p class="chart-axes">Residuals against Food Taste Score</p>
+          <div class="chart-canvas"><canvas id="chart-residual" role="img" aria-label="Residual plot of regression residuals against Food Taste Score"></canvas></div>
+        </div>
+
+        <div class="chart-box">
+          <p class="chart-title">Histogram, Food Taste Score</p>
+          <p class="chart-axes">Frequency by taste score value</p>
+          <div class="chart-canvas"><canvas id="chart-hist-x" role="img" aria-label="Histogram of Food Taste Score"></canvas></div>
+        </div>
+
+        <div class="chart-box">
+          <p class="chart-title">Histogram, Price Per Person</p>
+          <p class="chart-axes">Frequency by price bin ($)</p>
+          <div class="chart-canvas"><canvas id="chart-hist-y" role="img" aria-label="Histogram of Price Per Person"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="predictions">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">06. Prediction Examples</p>
+      <h2>Taste score to predicted price</h2>
+      <div class="predict-grid">
+        <div class="predict-card">
+          <div class="input">Taste Score: 22</div>
+          <div class="calc">Y = 2.94(22) &minus; 17.83</div>
+          <div class="result">$46.85</div>
+        </div>
+        <div class="predict-card">
+          <div class="input">Taste Score: 18</div>
+          <div class="calc">Y = 2.94(18) &minus; 17.83</div>
+          <div class="result">$35.09</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="assumptions">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">07. Assumption Checks</p>
+      <h2>Regression assumptions</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Assumption</th>
+              <th>Status</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mean of residuals equals 0</td>
+              <td><span class="status satisfied">Satisfied</span></td>
+              <td>Residuals average near 0</td>
+            </tr>
+            <tr>
+              <td>Linearity</td>
+              <td><span class="status satisfied">Satisfied</span></td>
+              <td>Scatterplot and trendline show a linear pattern</td>
+            </tr>
+            <tr>
+              <td>Constant variance</td>
+              <td><span class="status satisfied">Satisfied</span></td>
+              <td>Residuals appear evenly spread across fitted values</td>
+            </tr>
+            <tr>
+              <td>Independence</td>
+              <td><span class="status satisfied">Satisfied</span></td>
+              <td>Each observation is a different restaurant</td>
+            </tr>
+            <tr>
+              <td>Normality of residuals</td>
+              <td><span class="status partial">Partially met</span></td>
+              <td>Price is right skewed, which carries into the residuals. Large sample size helps.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="detail-note">
+        <summary>What do these assumptions mean?</summary>
+        <div class="detail-body">
+          <p><strong>Mean of residuals equals 0.</strong> On average, the model's price guesses are not too high or too low.</p>
+          <p><strong>Linearity.</strong> A straight line reasonably describes how taste score relates to price.</p>
+          <p><strong>Constant variance.</strong> The model's errors stay about the same size across all taste scores.</p>
+          <p><strong>Independence.</strong> One restaurant's price does not affect another restaurant's price.</p>
+          <p><strong>Normality of residuals.</strong> The model's errors mostly follow a bell shaped pattern, which helps the statistics behave predictably.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="summary">
+    <div class="wrap">
+      <span class="accent-rule"></span>
+      <p class="section-label">08. Summary</p>
+      <h2>Takeaway</h2>
+      <p class="lede">Better tasting food is associated with higher menu prices in New York City. Taste score alone explains less than half the variation in price. Other factors such as location, restaurant type, and service quality likely account for the remainder.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Carolina Varanko &middot; BA240, Academic Project, Spring 2025 &middot; <a href="Regression-Analysis_cvaranko.pdf">Full project PDF</a></p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  var DATASET = {"points": [{"n": "Daniella Ristorante", "x": 22, "y": 43, "p": 46.82, "r": -3.82}, {"n": "Tello's Ristorante", "x": 20, "y": 32, "p": 40.95, "r": -8.95}, {"n": "Biricchino", "x": 21, "y": 34, "p": 43.89, "r": -9.89}, {"n": "Bottino", "x": 20, "y": 41, "p": 40.95, "r": 0.05}, {"n": "Da Umberto", "x": 24, "y": 54, "p": 52.7, "r": 1.3}, {"n": "Le Madri", "x": 22, "y": 52, "p": 46.82, "r": 5.18}, {"n": "Le Zie", "x": 22, "y": 34, "p": 46.82, "r": -12.82}, {"n": "Pasticcio", "x": 20, "y": 34, "p": 40.95, "r": -6.95}, {"n": "Belluno", "x": 22, "y": 39, "p": 46.82, "r": -7.82}, {"n": "Cinque Terre", "x": 21, "y": 44, "p": 43.89, "r": 0.11}, {"n": "Fino", "x": 19, "y": 45, "p": 38.01, "r": 6.99}, {"n": "Marchi's", "x": 21, "y": 47, "p": 43.89, "r": 3.11}, {"n": "Nicola Paone", "x": 21, "y": 52, "p": 43.89, "r": 8.11}, {"n": "Notaro", "x": 19, "y": 35, "p": 38.01, "r": -3.01}, {"n": "Rossini's", "x": 20, "y": 47, "p": 40.95, "r": 6.05}, {"n": "Trattoria Alba", "x": 21, "y": 37, "p": 43.89, "r": -6.89}, {"n": "Villa Berulia", "x": 22, "y": 45, "p": 46.82, "r": -1.82}, {"n": "Il Postino", "x": 24, "y": 57, "p": 52.7, "r": 4.3}, {"n": "Luna Blu", "x": 19, "y": 38, "p": 38.01, "r": -0.01}, {"n": "San Giusto", "x": 22, "y": 51, "p": 46.82, "r": 4.18}, {"n": "Grifone", "x": 23, "y": 54, "p": 49.76, "r": 4.24}, {"n": "Nanni's", "x": 23, "y": 51, "p": 49.76, "r": 1.24}, {"n": "Osteria Laguna", "x": 20, "y": 38, "p": 40.95, "r": -2.95}, {"n": "Bellini", "x": 22, "y": 49, "p": 46.82, "r": 2.18}, {"n": "Cellini", "x": 22, "y": 45, "p": 46.82, "r": -1.82}, {"n": "Anche Vivolo", "x": 19, "y": 37, "p": 38.01, "r": -1.01}, {"n": "Bruno Ristorante", "x": 22, "y": 50, "p": 46.82, "r": 3.18}, {"n": "Chianti", "x": 20, "y": 43, "p": 40.95, "r": 2.05}, {"n": "Da Antonio Ristorante", "x": 22, "y": 49, "p": 46.82, "r": 2.18}, {"n": "Harry Cipriani", "x": 21, "y": 65, "p": 43.89, "r": 21.11}, {"n": "La Gioconda", "x": 20, "y": 34, "p": 40.95, "r": -6.95}, {"n": "Bice", "x": 21, "y": 51, "p": 43.89, "r": 7.11}, {"n": "Coco Pazzo Café", "x": 20, "y": 49, "p": 40.95, "r": 8.05}, {"n": "DeGrezia", "x": 23, "y": 51, "p": 49.76, "r": 1.24}, {"n": "FELIDIA", "x": 25, "y": 62, "p": 55.64, "r": 6.36}, {"n": "Fresco by Scotto", "x": 23, "y": 50, "p": 49.76, "r": 0.24}, {"n": "Giambelli", "x": 21, "y": 51, "p": 43.89, "r": 7.11}, {"n": "Il Menestrello", "x": 22, "y": 52, "p": 46.82, "r": 5.18}, {"n": "Il Nido", "x": 24, "y": 57, "p": 52.7, "r": 4.3}, {"n": "Il Valentino", "x": 21, "y": 49, "p": 43.89, "r": 5.11}, {"n": "Luna Piena", "x": 19, "y": 33, "p": 38.01, "r": -5.01}, {"n": "Paper Moon Milano", "x": 19, "y": 43, "p": 38.01, "r": 4.99}, {"n": "Teodora", "x": 21, "y": 41, "p": 43.89, "r": -2.89}, {"n": "San Pietro", "x": 24, "y": 58, "p": 52.7, "r": 5.3}, {"n": "Bravo Gianni", "x": 22, "y": 56, "p": 46.82, "r": 9.18}, {"n": "Canaletto", "x": 22, "y": 44, "p": 46.82, "r": -2.82}, {"n": "Il Gatto & La Volpe", "x": 20, "y": 37, "p": 40.95, "r": -3.95}, {"n": "Il Valletto Due Mila", "x": 21, "y": 56, "p": 43.89, "r": 12.11}, {"n": "Scalinatella", "x": 24, "y": 58, "p": 52.7, "r": 5.3}, {"n": "Barbaresco", "x": 16, "y": 44, "p": 29.19, "r": 14.81}, {"n": "Da Filippo", "x": 20, "y": 46, "p": 40.95, "r": 5.05}, {"n": "East River Cafe", "x": 20, "y": 40, "p": 40.95, "r": -0.95}, {"n": "Fred's at Barneys NY", "x": 19, "y": 39, "p": 38.01, "r": 0.99}, {"n": "Il Vagabondo", "x": 17, "y": 36, "p": 32.13, "r": 3.87}, {"n": "Mediterraneo", "x": 18, "y": 34, "p": 35.07, "r": -1.07}, {"n": "Nello", "x": 18, "y": 54, "p": 35.07, "r": 18.93}, {"n": "Primola", "x": 23, "y": 51, "p": 49.76, "r": 1.24}, {"n": "Gino", "x": 20, "y": 41, "p": 40.95, "r": 0.05}, {"n": "Via Oreto", "x": 22, "y": 40, "p": 46.82, "r": -6.82}, {"n": "Bardolino", "x": 18, "y": 24, "p": 35.07, "r": -11.07}, {"n": "Campagnola", "x": 24, "y": 53, "p": 52.7, "r": 0.3}, {"n": "Cucina Vivolo", "x": 19, "y": 31, "p": 38.01, "r": -7.01}, {"n": "Grace's Trattoria", "x": 18, "y": 35, "p": 35.07, "r": -0.07}, {"n": "Lumi", "x": 20, "y": 49, "p": 40.95, "r": 8.05}, {"n": "Mezzaluna", "x": 19, "y": 38, "p": 38.01, "r": -0.01}, {"n": "Sette Mezzo", "x": 21, "y": 48, "p": 43.89, "r": 4.11}, {"n": "Vivolo", "x": 20, "y": 43, "p": 40.95, "r": 2.05}, {"n": "Zucchero e Pomodori", "x": 17, "y": 29, "p": 32.13, "r": -3.13}, {"n": "Baraonda", "x": 17, "y": 37, "p": 32.13, "r": 4.87}, {"n": "Coco Pazzo", "x": 22, "y": 55, "p": 46.82, "r": 8.18}, {"n": "Due", "x": 22, "y": 37, "p": 46.82, "r": -9.82}, {"n": "Il Monello", "x": 23, "y": 55, "p": 49.76, "r": 5.24}, {"n": "Lusardi's", "x": 24, "y": 49, "p": 52.7, "r": -3.7}, {"n": "Maruzzella", "x": 19, "y": 33, "p": 38.01, "r": -5.01}, {"n": "Nino's", "x": 23, "y": 52, "p": 49.76, "r": 2.24}, {"n": "Parma", "x": 22, "y": 47, "p": 46.82, "r": 0.18}, {"n": "Il Riccio", "x": 21, "y": 43, "p": 43.89, "r": -0.89}, {"n": "Andiamo", "x": 18, "y": 33, "p": 35.07, "r": -2.07}, {"n": "Caffe Grazie", "x": 18, "y": 38, "p": 35.07, "r": 2.93}, {"n": "Giovanni Venticinque", "x": 21, "y": 48, "p": 43.89, "r": 4.11}, {"n": "Girasole", "x": 21, "y": 50, "p": 43.89, "r": 6.11}, {"n": "Paola's", "x": 23, "y": 46, "p": 49.76, "r": -3.76}, {"n": "Rughetta", "x": 23, "y": 38, "p": 49.76, "r": -11.76}, {"n": "Triangolo", "x": 20, "y": 33, "p": 40.95, "r": -7.95}, {"n": "Cafe Trevi", "x": 23, "y": 46, "p": 49.76, "r": -3.76}, {"n": "Divino Ristorante", "x": 19, "y": 37, "p": 38.01, "r": -1.01}, {"n": "Elio's", "x": 23, "y": 50, "p": 49.76, "r": 0.24}, {"n": "Erminia", "x": 25, "y": 54, "p": 55.64, "r": -1.64}, {"n": "Firenze", "x": 21, "y": 41, "p": 43.89, "r": -2.89}, {"n": "Luca", "x": 21, "y": 37, "p": 43.89, "r": -6.89}, {"n": "Nicola's", "x": 22, "y": 50, "p": 46.82, "r": 3.18}, {"n": "Primavera", "x": 24, "y": 60, "p": 52.7, "r": 7.3}, {"n": "Sirabella's", "x": 23, "y": 36, "p": 49.76, "r": -13.76}, {"n": "Sistina", "x": 23, "y": 54, "p": 49.76, "r": 4.24}, {"n": "Spada", "x": 19, "y": 39, "p": 38.01, "r": 0.99}, {"n": "Trattoria Rustica", "x": 20, "y": 35, "p": 40.95, "r": -5.95}, {"n": "Carino Ristorante", "x": 19, "y": 30, "p": 38.01, "r": -8.01}, {"n": "Quattro Gatti", "x": 19, "y": 41, "p": 38.01, "r": 2.99}, {"n": "Tony's Di Napoli", "x": 19, "y": 30, "p": 38.01, "r": -8.01}, {"n": "Ecco-la", "x": 18, "y": 25, "p": 35.07, "r": -10.07}, {"n": "Joanna's", "x": 19, "y": 43, "p": 38.01, "r": 4.99}, {"n": "Vico", "x": 20, "y": 45, "p": 40.95, "r": 4.05}, {"n": "Rao's", "x": 23, "y": 57, "p": 49.76, "r": 7.24}, {"n": "Basta Pasta", "x": 18, "y": 32, "p": 35.07, "r": -3.07}, {"n": "Campagna", "x": 24, "y": 51, "p": 52.7, "r": -1.7}, {"n": "Follonico", "x": 23, "y": 48, "p": 49.76, "r": -1.76}, {"n": "Ribollita", "x": 18, "y": 36, "p": 35.07, "r": 0.93}, {"n": "Bondí Ristorante´", "x": 20, "y": 37, "p": 40.95, "r": -3.95}, {"n": "Casa Mia", "x": 20, "y": 31, "p": 40.95, "r": -9.95}, {"n": "Novitá", "x": 23, "y": 47, "p": 49.76, "r": -2.76}, {"n": "Paul & Jimmy's", "x": 19, "y": 40, "p": 38.01, "r": 1.99}, {"n": "Sal Anthony's", "x": 18, "y": 37, "p": 35.07, "r": 1.93}, {"n": "Enoteca i Trulli", "x": 23, "y": 43, "p": 49.76, "r": -6.76}, {"n": "I Trulli", "x": 23, "y": 51, "p": 49.76, "r": 1.24}, {"n": "Lamarca", "x": 18, "y": 19, "p": 35.07, "r": -16.07}, {"n": "Supreme Macaroni Co.", "x": 17, "y": 28, "p": 32.13, "r": -4.13}, {"n": "Veronica", "x": 21, "y": 22, "p": 43.89, "r": -21.89}, {"n": "Arno", "x": 19, "y": 41, "p": 38.01, "r": 2.99}, {"n": "Amarone", "x": 19, "y": 33, "p": 38.01, "r": -5.01}, {"n": "Cara Mia", "x": 19, "y": 29, "p": 38.01, "r": -9.01}, {"n": "Casa Di Meglio", "x": 19, "y": 33, "p": 38.01, "r": -5.01}, {"n": "La Rivista", "x": 19, "y": 45, "p": 38.01, "r": 6.99}, {"n": "Trattoria Dopo Teatro", "x": 17, "y": 38, "p": 32.13, "r": 5.87}, {"n": "Barbetta", "x": 20, "y": 52, "p": 40.95, "r": 11.05}, {"n": "Becco", "x": 20, "y": 38, "p": 40.95, "r": -2.95}, {"n": "Coco Pazzo Teatro", "x": 18, "y": 47, "p": 35.07, "r": 11.93}, {"n": "Orso", "x": 22, "y": 46, "p": 46.82, "r": -0.82}, {"n": "Osteria al Doge", "x": 20, "y": 40, "p": 40.95, "r": -0.95}, {"n": "Pietrasanta", "x": 20, "y": 32, "p": 40.95, "r": -8.95}, {"n": "Rainbow Grill", "x": 19, "y": 65, "p": 38.01, "r": 26.99}, {"n": "Torre di Pisa", "x": 19, "y": 47, "p": 38.01, "r": 8.99}, {"n": "San Domenico", "x": 23, "y": 65, "p": 49.76, "r": 15.24}, {"n": "Trionfo", "x": 20, "y": 45, "p": 40.95, "r": 4.05}, {"n": "ViceVersa", "x": 22, "y": 46, "p": 46.82, "r": -0.82}, {"n": "Artusi", "x": 20, "y": 44, "p": 40.95, "r": 3.05}, {"n": "Ciao Europa", "x": 19, "y": 40, "p": 38.01, "r": 1.99}, {"n": "Limoncello", "x": 19, "y": 46, "p": 38.01, "r": 7.99}, {"n": "Puttanesca", "x": 19, "y": 32, "p": 38.01, "r": -6.01}, {"n": "Rino Trattoria", "x": 20, "y": 23, "p": 40.95, "r": -17.95}, {"n": "Sette MoMA", "x": 18, "y": 42, "p": 35.07, "r": 6.93}, {"n": "Trattoria Del Sogno", "x": 21, "y": 29, "p": 43.89, "r": -14.89}, {"n": "Castellano", "x": 21, "y": 49, "p": 43.89, "r": 5.11}, {"n": "Circo Osteria del", "x": 22, "y": 53, "p": 46.82, "r": 6.18}, {"n": "Giovanni", "x": 22, "y": 45, "p": 46.82, "r": -1.82}, {"n": "Palio", "x": 22, "y": 63, "p": 46.82, "r": 16.18}, {"n": "Remi", "x": 23, "y": 52, "p": 49.76, "r": 2.24}, {"n": "Tuscan Square", "x": 19, "y": 40, "p": 38.01, "r": 1.99}, {"n": "Vago Ristorante", "x": 22, "y": 45, "p": 46.82, "r": -1.82}, {"n": "Bello", "x": 21, "y": 38, "p": 43.89, "r": -5.89}, {"n": "Caffe Cielo", "x": 18, "y": 38, "p": 35.07, "r": 2.93}, {"n": "Da Tommaso", "x": 21, "y": 42, "p": 43.89, "r": -1.89}, {"n": "Il Tinello", "x": 23, "y": 57, "p": 49.76, "r": 7.24}, {"n": "Nocello", "x": 21, "y": 39, "p": 43.89, "r": -4.89}, {"n": "Tino's", "x": 20, "y": 43, "p": 40.95, "r": 2.05}, {"n": "Mangia e Bevi", "x": 17, "y": 29, "p": 32.13, "r": -3.13}, {"n": "Patsy's", "x": 20, "y": 42, "p": 40.95, "r": 1.05}, {"n": "Gabriel's", "x": 22, "y": 50, "p": 46.82, "r": 3.18}, {"n": "Pappardella", "x": 18, "y": 34, "p": 35.07, "r": -1.07}, {"n": "Ernie's", "x": 16, "y": 31, "p": 29.19, "r": 1.81}, {"n": "Pomodoro Rosso", "x": 20, "y": 31, "p": 40.95, "r": -9.95}, {"n": "Scaletta", "x": 21, "y": 46, "p": 43.89, "r": 2.11}, {"n": "La Grolla, Ristorante", "x": 21, "y": 42, "p": 43.89, "r": -1.89}, {"n": "Sambuca, Trattoria", "x": 19, "y": 31, "p": 38.01, "r": -7.01}, {"n": "Baci", "x": 17, "y": 31, "p": 32.13, "r": -1.13}, {"n": "Puccini", "x": 20, "y": 26, "p": 40.95, "r": -14.95}, {"n": "Bella Luna", "x": 18, "y": 31, "p": 35.07, "r": -4.07}, {"n": "Métisse", "x": 22, "y": 38, "p": 46.82, "r": -8.82}, {"n": "Gennaro", "x": 24, "y": 34, "p": 52.7, "r": -18.7}], "xHist": [{"bin": 16, "freq": 2}, {"bin": 17, "freq": 7}, {"bin": 18, "freq": 16}, {"bin": 19, "freq": 29}, {"bin": 20, "freq": 30}, {"bin": 21, "freq": 25}, {"bin": 22, "freq": 26}, {"bin": 23, "freq": 21}, {"bin": 24, "freq": 10}, {"bin": 25, "freq": 2}], "yHist": [{"bin": 14, "freq": 0}, {"bin": 16, "freq": 0}, {"bin": 18, "freq": 0}, {"bin": 20, "freq": 1}, {"bin": 22, "freq": 1}, {"bin": 24, "freq": 2}, {"bin": 26, "freq": 2}, {"bin": 28, "freq": 1}, {"bin": 30, "freq": 6}, {"bin": 32, "freq": 11}, {"bin": 34, "freq": 13}, {"bin": 36, "freq": 6}, {"bin": 38, "freq": 19}, {"bin": 40, "freq": 10}, {"bin": 42, "freq": 10}, {"bin": 44, "freq": 12}, {"bin": 46, "freq": 15}, {"bin": 48, "freq": 9}, {"bin": 50, "freq": 13}, {"bin": 52, "freq": 14}, {"bin": 54, "freq": 7}, {"bin": 56, "freq": 4}, {"bin": 58, "freq": 6}, {"bin": 60, "freq": 1}, {"bin": 62, "freq": 1}, {"bin": 64, "freq": 1}, {"bin": 66, "freq": 3}, {"bin": 68, "freq": 0}]};
+
+  var REG_SLOPE = 2.9389598143043667;
+  var REG_INTERCEPT = -17.832148556506603;
+
+  var COLOR_INK = '#2b1b16';
+  var COLOR_INK_SOFT = '#5e4a3e';
+  var COLOR_LINE = '#e9dace';
+  var COLOR_ACCENT = '#7a2331';
+  var COLOR_ACCENT_SOFT = 'rgba(122, 35, 49, 0.16)';
+
+  Chart.defaults.font.family = '"Inter", "Helvetica Neue", Arial, sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = COLOR_INK_SOFT;
+
+  function baseScales(xTitle, yTitle, yTicksCallback) {
+    return {
+      x: {
+        title: { display: true, text: xTitle, color: COLOR_INK },
+        grid: { color: COLOR_LINE },
+        ticks: { color: COLOR_INK_SOFT }
+      },
+      y: {
+        title: { display: true, text: yTitle, color: COLOR_INK },
+        grid: { color: COLOR_LINE },
+        ticks: { color: COLOR_INK_SOFT, callback: yTicksCallback }
+      }
+    };
+  }
+
+  var dollarTick = function (v) { return '$' + v; };
+
+  // 1. Scatter plot with regression line
+  var xMin = Math.min.apply(null, DATASET.points.map(function (d) { return d.x; }));
+  var xMax = Math.max.apply(null, DATASET.points.map(function (d) { return d.x; }));
+  var regressionLine = [
+    { x: xMin, y: REG_SLOPE * xMin + REG_INTERCEPT },
+    { x: xMax, y: REG_SLOPE * xMax + REG_INTERCEPT }
+  ];
+
+  new Chart(document.getElementById('chart-scatter'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Restaurants',
+          data: DATASET.points.map(function (d) { return { x: d.x, y: d.y, n: d.n }; }),
+          backgroundColor: COLOR_ACCENT_SOFT,
+          borderColor: COLOR_ACCENT,
+          borderWidth: 1,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Regression line (Y = 2.94X − 17.83)',
+          data: regressionLine,
+          type: 'line',
+          borderColor: COLOR_INK,
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            title: function (items) {
+              var d = items[0].raw;
+              return d.n || 'Regression line';
+            },
+            label: function (ctx) {
+              var d = ctx.raw;
+              if (d.n) return 'Taste score ' + d.x + ', price $' + d.y.toFixed(2);
+              return 'Predicted price at taste score ' + d.x + ': $' + d.y.toFixed(2);
+            }
+          }
+        }
+      },
+      scales: baseScales('Food Taste Score', 'Price Per Person ($)', dollarTick)
+    }
+  });
+
+  // 2. Line fit plot: actual points vs predicted line
+  var predictedByX = {};
+  DATASET.points.forEach(function (d) { predictedByX[d.x] = REG_SLOPE * d.x + REG_INTERCEPT; });
+  var predictedLine = Object.keys(predictedByX).map(Number).sort(function (a, b) { return a - b; })
+    .map(function (x) { return { x: x, y: predictedByX[x] }; });
+
+  new Chart(document.getElementById('chart-linefit'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Actual',
+          data: DATASET.points.map(function (d) { return { x: d.x, y: d.y, n: d.n }; }),
+          backgroundColor: COLOR_ACCENT_SOFT,
+          borderColor: COLOR_ACCENT,
+          borderWidth: 1,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Predicted',
+          data: predictedLine,
+          type: 'line',
+          borderColor: COLOR_INK,
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            title: function (items) {
+              var d = items[0].raw;
+              return d.n || 'Predicted line';
+            },
+            label: function (ctx) {
+              var d = ctx.raw;
+              if (d.n) return 'Actual price $' + d.y.toFixed(2) + ' at taste score ' + d.x;
+              return 'Predicted price at taste score ' + d.x + ': $' + d.y.toFixed(2);
+            }
+          }
+        }
+      },
+      scales: baseScales('Food Taste Score', 'Price Per Person ($)', dollarTick)
+    }
+  });
+
+  // 3. Residual plot
+  var zeroLine = [{ x: xMin, y: 0 }, { x: xMax, y: 0 }];
+
+  new Chart(document.getElementById('chart-residual'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Residuals',
+          data: DATASET.points.map(function (d) { return { x: d.x, y: d.r, n: d.n }; }),
+          backgroundColor: COLOR_ACCENT_SOFT,
+          borderColor: COLOR_ACCENT,
+          borderWidth: 1,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Zero line',
+          data: zeroLine,
+          type: 'line',
+          borderColor: COLOR_INK,
+          borderWidth: 1,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            title: function (items) {
+              var d = items[0].raw;
+              return d.n || 'Zero line';
+            },
+            label: function (ctx) {
+              var d = ctx.raw;
+              if (!d.n) return 'A point here means the prediction was exact';
+              var amt = Math.abs(d.y).toFixed(2);
+              return d.y >= 0
+                ? 'Actual price was $' + amt + ' above the prediction'
+                : 'Actual price was $' + amt + ' below the prediction';
+            }
+          }
+        }
+      },
+      scales: baseScales('Food Taste Score', 'Residual ($)', dollarTick)
+    }
+  });
+
+  // 4. Histogram, Food Taste Score
+  new Chart(document.getElementById('chart-hist-x'), {
+    type: 'bar',
+    data: {
+      labels: DATASET.xHist.map(function (b) { return b.bin; }),
+      datasets: [{
+        label: 'Frequency',
+        data: DATASET.xHist.map(function (b) { return b.freq; }),
+        backgroundColor: COLOR_ACCENT_SOFT,
+        borderColor: COLOR_ACCENT,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              return ctx.parsed.y + ' restaurants scored ' + ctx.label;
+            }
+          }
+        }
+      },
+      scales: baseScales('Food Taste Score', 'Frequency')
+    }
+  });
+
+  // 5. Histogram, Price Per Person
+  new Chart(document.getElementById('chart-hist-y'), {
+    type: 'bar',
+    data: {
+      labels: DATASET.yHist.map(function (b) { return '$' + (b.bin - 1) + '–$' + b.bin; }),
+      datasets: [{
+        label: 'Frequency',
+        data: DATASET.yHist.map(function (b) { return b.freq; }),
+        backgroundColor: COLOR_ACCENT_SOFT,
+        borderColor: COLOR_ACCENT,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              return ctx.parsed.y + ' restaurants priced ' + ctx.label;
+            }
+          }
+        }
+      },
+      scales: baseScales('Price Per Person ($)', 'Frequency')
+    }
+  });
+</script>
+
+</body>
+</html>
