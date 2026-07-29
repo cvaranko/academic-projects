@@ -32,7 +32,7 @@ A simple linear regression analysis examining the relationship between food tast
 ### 🎵 digital marketing analysis: Spotify
 > R · Kaggle · A/B Testing · Presentation
 > 
-**[view the live presentation →](URL)** (not live yet)
+**[view the live presentation →](https://cvaranko.github.io/academic-projects/digital-marketing-analysis-spotify/)**
 
 A digital marketing analysis of Spotify examining ecosystem strengths and weaknesses, two A/B tests exploring how release day and genre influence stream counts, and a breakdown of analytical tools used. Built in R using Kaggle data spanning 2015–2025.
 
