@@ -42,8 +42,6 @@ A digital marketing analysis of Spotify examining ecosystem strengths and weakne
 
 ### 🧙 Harry Potter sentiment analysis
 > R · NLP · Text Mining · NRC / Bing / AFINN
-> 
-**[view the live presentation →](URL)** (not live yet)
 
 A text mining project applying NRC, Bing, and AFINN sentiment lexicons to the Harry Potter series. Analyzes emotional tone across books, chapters, and individual words to surface narrative patterns and conflict-driven language shifts.
 
@@ -51,8 +49,6 @@ A text mining project applying NRC, Bing, and AFINN sentiment lexicons to the Ha
 
 ### 🏛️ presidential speech sentiment analysis
 > R · NLP · Statistical Analysis
-> 
-**[view the live presentation →](URL)** (not live yet)
 
 A sentiment analysis of 227 U.S. presidential State of the Union addresses, examining how emotional tone has shifted over time, varied across presidents, and whether party affiliation has a statistically significant effect on speech sentiment.
 
@@ -60,8 +56,6 @@ A sentiment analysis of 227 U.S. presidential State of the Union addresses, exam
 
 ### 📊 GDP & PCE OLS regression analysis
 > R · OLS Regression · Econometrics
-> 
-**[view the live presentation →](URL)** (not live yet)
 >
 An OLS regression analysis examining the relationship between U.S. GDP and Personal Consumption Expenditure from 1970 to 2025. Compares a linear model against a log-log specification to determine which better captures long-term economic growth patterns.
 
@@ -69,8 +63,6 @@ An OLS regression analysis examining the relationship between U.S. GDP and Perso
 
 ### 🔬 multicollinearity, non-linearity & heteroskedasticity
 > R · OLS Regression · Econometrics
-> 
-**[view the live presentation →](URL)** (not live yet)
 > 
 An OLS regression analysis examining the determinants of the 30-year fixed mortgage rate using monthly FRED data from 1996 to 2026. Applies six model specifications with stepwise variable reduction based on significance and VIF diagnostics, a log transformation on CPI, and Breusch-Pagan and White tests to assess heteroskedasticity.
 
