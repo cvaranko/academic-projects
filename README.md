@@ -38,12 +38,21 @@ A digital marketing analysis of Spotify examining ecosystem strengths and weakne
 
 ---
 
+### 🌊 PADI website redesign: a consulting proposal
+> Digital Marketing · UX Strategy · Power BI · GA4
+
+**Live presentation coming soon**
+
+A consulting proposal for PADI (Professional Association of Diving Instructors) examining how the homepage's single-path conversion funnel loses first-time visitors before they reach a purchase. Proposes a content strategy and mobile-first redesign to surface a lower-commitment entry point (Discover Scuba Diving) alongside the existing certification path. Includes a full measurement plan: GA4 event tracking, cross-domain tagging, a Power Query + Power BI pipeline blending web analytics with dive shop referral data, and a three-stage reporting model scaling from a basic traffic dashboard to a quarterly consultative deliverable for PADI leadership.
+
+---
+
 ## senior year
 
 ### 🧙 Harry Potter sentiment analysis
 > R · NLP · Text Mining · NRC / Bing / AFINN
 
-**[view the live presentation →](URL)** (not live)
+**Live presentation coming soon**
 
 A text mining project applying NRC, Bing, and AFINN sentiment lexicons to the Harry Potter series. Analyzes emotional tone across books, chapters, and individual words to surface narrative patterns and conflict-driven language shifts.
 
@@ -66,7 +75,7 @@ An OLS regression analysis examining the relationship between U.S. GDP and Perso
 ### 🔬 multicollinearity, non-linearity & heteroskedasticity
 > R · OLS Regression · Econometrics
 
-**[view the live presentation →](URL)** (not live)
+**Live presentation coming soon**
 
 An OLS regression analysis examining the determinants of the 30-year fixed mortgage rate using monthly FRED data from 1996 to 2026. Applies six model specifications with stepwise variable reduction based on significance and VIF diagnostics, a log transformation on CPI, and Breusch-Pagan and White tests to assess heteroskedasticity.
 
